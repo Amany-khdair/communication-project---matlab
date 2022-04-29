@@ -1,0 +1,50 @@
+clear all
+close all
+clc
+u=0.25;
+Ac=1;
+fm=1; 
+fc=25;
+minimumtaw =1/fc;
+maximumtaw =1/fm;
+tc =10^(-6);
+taw = minimumtaw:tc:maximumtaw; 
+
+numberoftaw=length(taw);
+Ts=minimumtaw/100;             
+t = 0:Ts:2*maximumtaw;
+nb=length(t);
+envelope =1+u.*cos(2*pi*fm*t);
+modulated =(envelope).*cos(2*pi*fc*t);
+for i=1:numberoftaw   
+    out(1,1)=1+u;     %array means first raw &first column equals:
+    for n=1:nb-1
+        if out(1,n)<modulated(1,n)
+            out(1,n+1)= modulated(1,n);
+        else
+            out(1,n+1)=out(1,n)*exp(-Ts/taw(1,i));              %this part do charging and discharging for the capacitor
+        end
+    end
+    %mse is the mean squared error
+    mse(1,i)=(norm((out-envelope).^2))/nb;
+end
+[~,TawOp]=min(mse); 
+out(1,1)=1+u;
+for n=1:nb-1
+    if out(1,n)<modulated(1,n)
+        out(1,n+1)=modulated(1,n+1);
+    else
+        out(1,n+1)=out(1,n)*exp(-Ts/taw(1,TawOp));
+    end
+end 
+plot(taw,mse);
+grid on;
+xlabel('taw (sec)');
+ylabel('mean squared error(MSE)');
+title('the distortion');
+figure;
+plot(t,modulated);
+hold on 
+plot(t,out,'g','linewidth',2.0);
+title('AM waveform and envelope detector output for taw_o')
+xlabel('time');ylabel('Amp');

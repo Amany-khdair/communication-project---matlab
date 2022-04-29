@@ -1,0 +1,32 @@
+clear all
+close all
+clc
+u=0.25;
+Ac=1;
+fm=1; 
+fc=25;  
+t=0:0.01:10; 
+m=cos(2*pi*fm*t);
+subplot(111)
+plot(t,m)
+axis([0 2 -2 2]);
+title('message signal [m(t)]')
+xlabel('time')
+ylabel("m(t)")
+grid on
+envelope=abs(Ac*(1+u*cos(2*pi*fm*t)));
+subplot(211)
+plot(t,envelope)
+axis([0 2 -2 2]);
+title('demodulation signal')
+xlabel('time')
+ylabel("v(t)")
+grid on
+s=Ac*(1+u*cos(2*pi*fm*t)).*cos(2*pi*fc*t);
+subplot(311)
+plot(t,s)
+axis([0 2 -2 2]); 
+title('the demodulated signal [s(t)]')
+xlabel('time')
+ylabel("s(t)")
+grid on
